@@ -1,8 +1,11 @@
 import re
+import sys
+
 import tweepy
 from tweepy import OAuthHandler
 from textblob import TextBlob
- 
+
+
 class TwitterClient(object):
     """
         Generic Twitter Class for sentiment analysis.
@@ -11,21 +14,18 @@ class TwitterClient(object):
         """
             Class constructor or initialization method.
         """
-        # keys and tokens from the Twitter Dev Console
-        if key and secret and token and token_secret:
-            # attempt authentication
-            try:
-                # create OAuthHandler object
-                self.auth = OAuthHandler(key, secret)
-                # set access token and secret
-                self.auth.set_access_token(token, token_secret)
-                # create tweepy API object to fetch tweets
-                self.api = tweepy.API(self.auth)
-            except Exception, err_msg:
-                print("Error: Authentication Failed \n %s" % err_msg)
-        else:
-            print("Error: Consumer key, secret and access token are required for authentication")
- 
+        # attempt authentication
+        try:
+            # create OAuthHandler object
+            self.auth = OAuthHandler(key, secret)
+            # set access token and secret
+            self.auth.set_access_token(token, token_secret)
+            # create tweepy API object to fetch tweets
+            self.api = tweepy.API(self.auth)
+        except Exception, err_msg:
+            print("Error: Authentication Failed \n %s" % err_msg)
+            sys.exit()
+
     def clean_tweet(self, tweet):
         """
         Utility function to clean tweet text by removing links, special characters
@@ -81,44 +81,50 @@ class TwitterClient(object):
                     tweets.append(parsed_tweet)
  
             # return parsed tweets
-            return tweets
+            return False, tweets
  
         except tweepy.TweepError as e:
-            # print error (if any)
-            print("Error : " + str(e))
+            return True, "Error : " + str(e)
  
     
 if __name__ == "__main__":
     # keys and tokens from the Twitter Dev Console
-    consumer_key = raw_input('Enter/Paste the consumer key')
-    consumer_secret = raw_input('Enter/Paste the consumer secret')
-    access_token = raw_input('Enter/Paste the access token')
-    access_token_secret = raw_input('Enter/Paste the access token secret')
-    # creating object of TwitterClient Class
-    api = TwitterClient(consumer_key, consumer_secret, access_token, access_token_secret)
-    # calling function to get tweets
-    keyword = raw_input('Enter the keyword - to search the tweets')
-    tweets = api.get_tweets(keyword=keyword, count=200)
- 
-    # picking positive tweets from tweets
-    ptweets = [tweet for tweet in tweets if tweet['sentiment'] == 'positive']
-    # percentage of positive tweets
-    print("Positive tweets percentage: {} %".format(100*len(ptweets)/len(tweets)))
-    # picking negative tweets from tweets
-    ntweets = [tweet for tweet in tweets if tweet['sentiment'] == 'negative']
-    # percentage of negative tweets
-    print("Negative tweets percentage: {} %".format(100*len(ntweets)/len(tweets)))
-    # percentage of neutral tweets
-    print("Neutral tweets percentage: {} % \
-        ".format(100*len(tweets - ntweets - ptweets)/len(tweets)))
- 
-    # printing first 5 positive tweets
-    print("\n\nPositive tweets:")
-    for tweet in ptweets[:10]:
-        print(tweet['text'])
- 
-    # printing first 5 negative tweets
-    print("\n\nNegative tweets:")
-    for tweet in ntweets[:10]:
-        print(tweet['text'])
- 
+    consumer_key = raw_input('Enter/Paste the consumer key: ')
+    consumer_secret = raw_input('Enter/Paste the consumer secret: ')
+    access_token = raw_input('Enter/Paste the access token: ')
+    access_token_secret = raw_input('Enter/Paste the access token secret: ')
+    if consumer_key and consumer_secret and access_token and access_token_secret:
+        # creating object of TwitterClient Class
+        api = TwitterClient(consumer_key, consumer_secret, access_token, access_token_secret)
+        print "\n .................... Authenticated ...................... \n"
+        # calling function to get tweets
+        keyword = raw_input('Enter the keyword - to search the tweets: ')
+        count = raw_input('No. of tweets to get from the search: ')
+        status, tweets = api.get_tweets(keyword=keyword, count=count)
+        if status:
+            print tweets  # the error messages
+            sys.exit()
+        # picking positive tweets from tweets
+        ptweets = [tweet for tweet in tweets if tweet['sentiment'] == 'positive']
+        # percentage of positive tweets
+        print("Positive tweets percentage: {} %".format(100*len(ptweets)/len(tweets)))
+        # picking negative tweets from tweets
+        ntweets = [tweet for tweet in tweets if tweet['sentiment'] == 'negative']
+        # percentage of negative tweets
+        print("Negative tweets percentage: {} %".format(100*len(ntweets)/len(tweets)))
+        # percentage of neutral tweets
+        print("Neutral tweets percentage: {} % \
+            ".format(100*len(tweets - ntweets - ptweets)/len(tweets)))
+
+        # printing first 5 positive tweets
+        print("\n\nPositive tweets:")
+        for tweet in ptweets[:10]:
+            print(tweet['text'])
+
+        # printing first 5 negative tweets
+        print("\n\nNegative tweets:")
+        for tweet in ntweets[:10]:
+            print(tweet['text'])
+    else:
+        print("Error: Consumer key, secret and access token are required for authentication")
+        sys.exit()
