@@ -7,26 +7,24 @@ class TwitterClient(object):
     '''
     Generic Twitter Class for sentiment analysis.
     '''
-    def __init__(self):
+    def __init__(self, consumer_key=None, consumer_secret=None, access_token=None, access_token_secret=None):
         '''
         Class constructor or initialization method.
         '''
         # keys and tokens from the Twitter Dev Console
-        consumer_key = 'XXXXXXXXXXXXXXXXXXXXXXXX'
-        consumer_secret = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXX'
-        access_token = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXX'
-        access_token_secret = 'XXXXXXXXXXXXXXXXXXXXXXXXX'
- 
-        # attempt authentication
-        try:
-            # create OAuthHandler object
-            self.auth = OAuthHandler(consumer_key, consumer_secret)
-            # set access token and secret
-            self.auth.set_access_token(access_token, access_token_secret)
-            # create tweepy API object to fetch tweets
-            self.api = tweepy.API(self.auth)
-        except:
-            print("Error: Authentication Failed")
+        if consumer_key and consumer_secret and access_token and access_token_secret:
+			# attempt authentication
+			try:
+				# create OAuthHandler object
+				self.auth = OAuthHandler(consumer_key, consumer_secret)
+				# set access token and secret
+				self.auth.set_access_token(access_token, access_token_secret)
+				# create tweepy API object to fetch tweets
+				self.api = tweepy.API(self.auth)
+			except:
+				print("Error: Authentication Failed")
+		else:
+			print("Error: Consumer key, secret and access token are required for authentication")
  
     def clean_tweet(self, tweet):
         '''
@@ -51,7 +49,7 @@ class TwitterClient(object):
         else:
             return 'negative'
  
-    def get_tweets(self, query, count = 10):
+    def get_tweets(self, keyword, count = 10):
         '''
         Main function to fetch tweets and parse them.
         '''
@@ -87,11 +85,18 @@ class TwitterClient(object):
             # print error (if any)
             print("Error : " + str(e))
  
-def main():
+    
+if __name__ == "__main__":
+	# keys and tokens from the Twitter Dev Console
+	consumer_key = raw_input('Enter/Paste the consumer key')
+	consumer_secret = raw_input('Enter/Paste the consumer secret')
+	access_token = raw_input('Enter/Paste the access token')
+	access_token_secret = raw_input('Enter/Paste the access token secret')
     # creating object of TwitterClient Class
-    api = TwitterClient()
+    api = TwitterClient(consumer_key, consumer_secret, access_token, access_token_secret)
     # calling function to get tweets
-    tweets = api.get_tweets(query = 'Donald Trump', count = 200)
+	keyword = raw_input('Enter the keyword - to search the tweets')
+    tweets = api.get_tweets(keyword=keyword, count=200)
  
     # picking positive tweets from tweets
     ptweets = [tweet for tweet in tweets if tweet['sentiment'] == 'positive']
@@ -115,6 +120,3 @@ def main():
     for tweet in ntweets[:10]:
         print(tweet['text'])
  
-if __name__ == "__main__":
-    # calling main function
-    main()
