@@ -1,0 +1,5 @@
+# ignore the following for version control
+
+*.pyc
+config
+.idea/*
