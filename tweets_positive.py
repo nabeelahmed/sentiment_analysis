@@ -5,6 +5,8 @@ import tweepy
 from tweepy import OAuthHandler
 from textblob import TextBlob
 
+import config
+
 
 class TwitterClient(object):
     """
@@ -89,10 +91,14 @@ class TwitterClient(object):
     
 if __name__ == "__main__":
     # keys and tokens from the Twitter Dev Console
-    consumer_key = raw_input('Enter/Paste the consumer key: ')
-    consumer_secret = raw_input('Enter/Paste the consumer secret: ')
-    access_token = raw_input('Enter/Paste the access token: ')
-    access_token_secret = raw_input('Enter/Paste the access token secret: ')
+    # consumer_key = raw_input('Enter/Paste the consumer key: ')
+    # consumer_secret = raw_input('Enter/Paste the consumer secret: ')
+    # access_token = raw_input('Enter/Paste the access token: ')
+    # access_token_secret = raw_input('Enter/Paste the access token secret: ')
+    consumer_key = config.consumer_key
+    consumer_secret = config.consumer_secret
+    access_token = config.access_token
+    access_token_secret = config.access_secret
     if consumer_key and consumer_secret and access_token and access_token_secret:
         # creating object of TwitterClient Class
         api = TwitterClient(consumer_key, consumer_secret, access_token, access_token_secret)

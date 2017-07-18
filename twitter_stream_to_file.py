@@ -1,10 +1,15 @@
-# To run this code, first edit config.py with your configuration, then:
-#
+"""
+To run this code, first edit config.py (create the file and edit) with your configuration, then:
+
 # mkdir data
-# python twitter_stream_download.py -q apple -d data
-# 
-# It will produce the list of tweets for the query "apple" 
-# in the file data/stream_apple.json
+
+The execute the following command:
+# python twitter_stream_download.py -q python -d data
+
+It will produce the list of tweets for the query i.e. python
+in the file data/stream_python.json
+"""
+
 
 import tweepy
 from tweepy import Stream
